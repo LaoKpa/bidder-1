@@ -1,13 +1,14 @@
 #
-# Contains the full stack of the RTB4FREe stack (not including crosstalk, elk, mysql or campaign manager)
+# Contains the full stack of rtb4free (not including crosstalk, elk, mysql)
 # Does contain zookeeper and kafka.
 #
+
 version: "3"
 
 services:
 
   zookeeper:
-    image: "zookeeper"
+    image: "jplock/zookeeper"
     ports:
       - "2181:2181"
     networks:
@@ -25,7 +26,7 @@ services:
       - zookeeper
 
   zerospike:
-    image: "jacamars/zerospike:v1"
+    image: "xinghao/zerospike:v1.1"
     environment:
       BROKERLIST: "kafka:9092"
     ports:
@@ -39,40 +40,36 @@ services:
       - rtb_net
     depends_on:
       - kafka
-    command: bash -c "./wait-for-it.sh kafka:9092 --t=120 && sleep 1; ./zerospike"
+    command: bash -c "./wait-for-it.sh kafka:9092 -t 120 && sleep 1; ./zerospike"
 
   bidder:
-    image: "jacamars/rtb4free:v1"
+    image: "xinghao/rtb4free:v1.1"
     environment:
       BROKERLIST: "kafka:9092"
       PUBSUB: "zerospike"
       EXTERNAL: "http://localhost:8080"
+      ADMINPORT: "0"
+      TRACE: "true"
       ACCOUNTING: "NONE"
-      S3BUCKET: ""
-      S3REGION: ""
-      S3SECRETKEY: ""
-      S3ACCESSKEY: ""
-      GOOGLE_EKEY: ""
-      GOOGLE_IKEY: ""
-      OPENX_EKEY: ""
-      OPENX_IKEY: ""
-      ADX_EKEY:   ""
-      ADX_IKEY:   ""
+      FREQGOV: "false"
+      THROTTLE: "500"
     ports:
       - "8080:8080"
       - "8155:8155"
       - "7379:7379"
       - "7000:7000"
-    #volumes:
-    #  - "./database.json:/database.json"
-    #  - "./payday.json:/Campaigns/payday.json"
+    volumes:
+      - "./logs:/logs"
+    # - "./database.json:/database.json"   
+    # - "./payday.json:/Campaigns/payday.json"
     networks:
       - rtb_net
     depends_on:
       - kafka
       - zerospike
-    command: bash -c "./wait-for-it.sh kafka:9092 --t=120 && ./wait-for-it.sh zerospike:6000 --t 120 && sleep 1; ./rtb4free"
-    #command:  bash -c "./wait-for-it.sh kafka:9092 --timeout=120 && ./wait-for-it.sh zerospike:6000 --timeout 120 && sleep 1; ./rtb4free-jmx"
+    restart: always
+    command: bash -c "./wait-for-it.sh kafka:9092 -t 120 && ./wait-for-it.sh zerospike:6002 -t 120 && sleep 1; ./rtb4free"
+    #command:  bash -c "./wait-for-it.sh kafka:9092 -t 120 && ./wait-for-it.sh zerospike:6000 -t 120 && sleep 1; ./rtb4free-jmx"
 
 
 networks:

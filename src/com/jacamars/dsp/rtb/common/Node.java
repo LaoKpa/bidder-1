@@ -261,6 +261,11 @@ public class Node {
     public void clearFalseCount() {
 	    falseCount.set(0);
     }
+    
+    
+    public String getInfo() {
+    	return "NODE: Name: " + this.name + ", Hierarchy: " + this.hierarchy + ", OP: " + this.op + ", Value: " + this.value.toString();
+    }
 
 	/**
 	 * Constructor for the campaign Node

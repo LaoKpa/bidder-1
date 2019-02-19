@@ -6,7 +6,7 @@
 		"id": "1",
 		"instl": 0,
 		"banner": {
-			"h": 50,
+			"h": 100,
 			"w": 320,
 			"mimes": ["image/jpg", "text/javascript"],
 			"pos": 0

@@ -1015,6 +1015,7 @@ class Handler extends AbstractHandler {
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
 
+    	logger.info("RTBServer ======================:" + target);
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Allow-Headers", "Content-Type");
 
@@ -1065,6 +1066,9 @@ class Handler extends AbstractHandler {
 
             if (x != null) {
 
+                if (RTBServer.trace)
+                    logger.info("Target Exchanges: {}",target);
+
                 if (BidRequest.compilerBusy()) {
                     baseRequest.setHandled(true);
                     response.setHeader("X-REASON", "Server initializing");
@@ -1106,6 +1110,7 @@ class Handler extends AbstractHandler {
                     return;
                 } else {
 
+
                     boolean requestLogged = false;
                     unknown = false;
                     // RunRecord log = new RunRecord("bid-request");
@@ -1136,6 +1141,7 @@ class Handler extends AbstractHandler {
                         }
                     }
 
+
                     if (RTBServer.server.getThreadPool().isLowOnThreads()) {
                         code = RTBServer.NOBID_CODE;
                         json = "Server throttling";
@@ -1149,6 +1155,7 @@ class Handler extends AbstractHandler {
                         return;
                     }
 
+
                     // Some exchanges like Appnexus send other endpoints, so
                     // they are handled here.
                     if (br.notABidRequest()) {
@@ -1160,6 +1167,7 @@ class Handler extends AbstractHandler {
                         RTBServer.request--;
                         return;
                     }
+
 
                     if (Configuration.getInstance().getCampaignsList().size() == 0) {
                         logger.debug("No campaigns loaded");
@@ -1181,6 +1189,11 @@ class Handler extends AbstractHandler {
                         RTBServer.nobid++;
                         Controller.getInstance().sendNobid(new NobidResponse(br.id, br.getExchange()));
                     } else {
+                    	
+
+                        if (RTBServer.trace)
+                            logger.info("Start Bid Max Connections processing............");
+                    	
                         bresp = CampaignSelector.getInstance().getMaxConnections(br);
                         if (bresp == null) {
                             code = RTBServer.NOBID_CODE;
@@ -1670,6 +1683,7 @@ class Handler extends AbstractHandler {
             // time
             // here
             // else
+            
             bresp = CampaignSelector.getInstance().getMaxConnections(br);
             // log.add("select");
             if (bresp == null) {
