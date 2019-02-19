@@ -2,6 +2,7 @@ docker container prune
 
 
 #cp sampledb.json database.json
+
 mvn clean
 mvn assembly:assembly -DdescriptorId=jar-with-dependencies -Dmaven.test.skip=true
 docker build -t xinghao/zerospike:v1.1 -f Docker.zerospike . 
@@ -25,3 +26,8 @@ docker-compose up
 
 #docker stop $(docker ps -aq)
 #docker rmi $(docker images -q)
+
+
+
+#install java JDK from default package
+#https://thishosting.rocks/install-java-ubuntu/
