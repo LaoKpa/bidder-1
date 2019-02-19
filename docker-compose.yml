@@ -47,7 +47,7 @@ services:
     environment:
       BROKERLIST: "kafka:9092"
       PUBSUB: "zerospike"
-      EXTERNAL: "http://localhost:8080"
+      EXTERNAL: "http://13.237.142.236:8080"
       ADMINPORT: "0"
       TRACE: "true"
       ACCOUNTING: "NONE"
